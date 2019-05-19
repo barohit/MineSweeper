@@ -8,6 +8,7 @@ difficultyLevelX = 0
 difficultyLevelY= 0
 numMines = 0
 lossCondition = False
+winCondition = False
 
 
 answer = input("Good evening, what difficulty level would you like to play at? You can enter beginner, intermediate, or expert: ")
@@ -59,29 +60,52 @@ def containerGenerator(diffLevel):
 def printBoard(field):
     for e in field:
         for element in e: 
-            if (element.clickedStatus == "unclicked"):
-                print(element.clickedStatus, end=" ")
-            else: 
-                if (element.item == "mine"): 
-                    print(element.item, end=" ")
-                else:
-                    if (element.item == "empty" and element.surroundingMines == 0):
-                        print(element.item, end=" ")
+            if (element.flagStatus == "flagged"):
+                print(element.flagStatus.ljust(9), end=" ")
+            else:
+                if (element.clickedStatus == "unclicked"):
+                    print(element.clickedStatus, end=" ")
+                else: 
+                    if (element.item == "mine"): 
+                        print(element.item.ljust(9), end=" ")
                     else:
-                        print(element.surroundingMines, end=" ")
+                        if (element.item == "empty" and element.surroundingMines == 0):
+                            print(element.item.ljust(9), end=" ")
+                        else:
+                            print("{0:9d}".format(element.surroundingMines), end=" ")
         print("")   
 
 def play():
     xInput = int(input("Enter x-coordinate starting at 1: "))
     yInput = int(input("Enter y-coordinate starting at 1: "))
+    flag = input("Would you like to click this square, flag it or unflag it? (Enter 'click', 'flag' or 'unflag')")
     try:
-        if ((minefield[8 - yInput])[xInput - 1].item == "mine"):
-            global lossCondition
-            lossCondition = True
-        (minefield[8 - yInput])[xInput - 1].clickedStatus = "clicked"
+        if (flag == "flag"):
+            if ((minefield[8 - yInput])[xInput - 1].clickedStatus == "unclicked"): #you can  only flag an unclicked square
+                (minefield[8 - yInput])[xInput - 1].flagStatus = "flagged"
+            else:
+                print("Sorry, you cannot flag a square that has already been clicked :/")
+        else:
+            if (flag == "unflag"):
+                (minefield[8 - yInput])[xInput - 1].flagStatus = "" #resets regardless of whether or not the square is already flagged
+            else:
+                if ((minefield[8 - yInput])[xInput - 1].item == "mine"):
+                    global lossCondition
+                    lossCondition = True
+                (minefield[8 - yInput])[xInput - 1].clickedStatus = "clicked"
+                (minefield[8 - yInput])[xInput - 1].flagStatus = ""
         printBoard(minefield)
         if (lossCondition == True):
             print("Sorry, you have lost :(")  
+        global winCondition
+        winCondition = True
+        for e in minefield:
+            for element in e: 
+                if (element.item == "mine" and element.flagStatus == ""):
+                    winCondition = False
+        if (winCondition == True):
+            print("Congratulations, you win! :)")
+                
     except IndexError:
         print("Sorry, invalid input")
         
@@ -107,15 +131,15 @@ def initializeSurroundingMines(field):
                 if (field[element.x_coordinate - 1][element.y_coordinate - 1].item == "mine"):
                     counter = counter + 1
                 element.surroundingMines = counter
-            except IndexError: 
+            except IndexError: #makes sure the above method code can work with border squares without having an error
                 counter = counter + 0
                 
                     
          
 containerGenerator(answer) #creates the board
-initializeSurroundingMines(minefield)
+initializeSurroundingMines(minefield) #fills each square with the number of surrounding minds
 printBoard(minefield) 
-while (lossCondition == False):
+while (lossCondition == False and winCondition == False): 
     play()
 
 

@@ -4,6 +4,7 @@ class Square:
     item = "empty"
     clickedStatus = "unclicked"
     surroundingMines = 0
+    flagStatus = ""
     
     
     def __init__(self, xCoord, yCoord):
