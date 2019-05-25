@@ -12,11 +12,11 @@ winCondition = False
 
 
 answer = input("Good evening, what difficulty level would you like to play at? You can enter beginner, intermediate, or expert: ")
-if (answer == "beginner"): 
+if (answer == "beginner"): # in order to create an 8x8 board
     difficultyLevelX = 8
     difficultyLevelY = 8
 else:
-    if (answer == "intermediate"):
+    if (answer == "intermediate"): # same logic as above, and also for expert answer
         difficultyLevelX = 16
         difficultyLevelY = 16
     else: 
@@ -24,7 +24,7 @@ else:
             difficultyLevelX = 16
             difficultyLevelY = 30
     
-while (counterX < difficultyLevelX ):
+while (counterX < difficultyLevelX ): #this  while  loop creates a 2D array of squares
     minefield.append([])
     while (counterY < difficultyLevelY): 
         minefield[counterX].append(Square(counterX, counterY))
@@ -32,13 +32,13 @@ while (counterX < difficultyLevelX ):
     counterX = counterX + 1
     counterY = 0
 
-def containerGenerator(diffLevel):
+def containerGenerator(diffLevel): #places mines in random locations
     global numMines
     if (diffLevel == "beginner"):
         while(numMines < 10): 
-            xCoord = random.randint(0, difficultyLevelX - 1) #remember, range is inclusive
+            xCoord = random.randint(0, difficultyLevelX - 1) 
             yCoord = random.randint(0, difficultyLevelY - 1)
-            if (minefield[xCoord][yCoord].item != "mine"):
+            if (minefield[xCoord][yCoord].item != "mine"):  #makes sure the  counter is not incremented for a duplicate
                 minefield[xCoord][yCoord].addItem("mine")
                 numMines = numMines + 1
     if (diffLevel == "intermediate"):
@@ -57,7 +57,8 @@ def containerGenerator(diffLevel):
                 numMines = numMines + 1
     
     
-def printBoard(field):
+def printBoard(field): #logic is pretty straight forward, if square is flagged or unclicked, print that
+    # otherwise print what is inside
     for e in field:
         for element in e: 
             if (element.flagStatus == "flagged"):
@@ -80,13 +81,13 @@ def play():
     yInput = int(input("Enter y-coordinate starting at 1: "))
     flag = input("Would you like to click this square, flag it or unflag it? (Enter 'click', 'flag' or 'unflag')")
     try:
-        if (flag == "flag"):
+        if (flag == "flag"): #flags a square unless it's clicked
             if ((minefield[8 - yInput])[xInput - 1].clickedStatus == "unclicked"): #you can  only flag an unclicked square
                 (minefield[8 - yInput])[xInput - 1].flagStatus = "flagged"
             else:
                 print("Sorry, you cannot flag a square that has already been clicked :/")
         else:
-            if (flag == "unflag"):
+            if (flag == "unflag"): #unflags
                 (minefield[8 - yInput])[xInput - 1].flagStatus = "" #resets regardless of whether or not the square is already flagged
             else:
                 if ((minefield[8 - yInput])[xInput - 1].item == "mine"):
@@ -95,14 +96,14 @@ def play():
                 (minefield[8 - yInput])[xInput - 1].clickedStatus = "clicked"
                 (minefield[8 - yInput])[xInput - 1].flagStatus = ""
         printBoard(minefield)
-        if (lossCondition == True):
+        if (lossCondition == True): #ends game if a mine is  hit
             print("Sorry, you have lost :(")  
         global winCondition
         winCondition = True
         for e in minefield:
             for element in e: 
                 if (element.item == "mine" and element.flagStatus == ""):
-                    winCondition = False
+                    winCondition = False #makes sure to not show a victory if there are unflagged mines
         if (winCondition == True):
             print("Congratulations, you win! :)")
                 
@@ -137,9 +138,10 @@ def initializeSurroundingMines(field):
                     
          
 containerGenerator(answer) #creates the board
-initializeSurroundingMines(minefield) #fills each square with the number of surrounding minds
+initializeSurroundingMines(minefield) #fills each square with the number of surrounding mines
 printBoard(minefield) 
-while (lossCondition == False and winCondition == False): 
+while (lossCondition == False and winCondition == False): #makes sure game continues unless either a 
+    #victory or loss is hit
     play()
 
 
